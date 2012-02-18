@@ -97,11 +97,12 @@ nativesortable = (function() {
                 return true;
             }
             
-            addClassName(this, 'over');
-            
             if (e.preventDefault) {
                 e.preventDefault();
             }
+            
+            removeDragClasses();
+            addClassName(this, 'over');
             return false;
         }
         
@@ -131,19 +132,21 @@ nativesortable = (function() {
         
         function handleDragEnd(e) {
             currentlyDraggingElement = null;
+            removeDragClasses();
+        }
+        function removeDragClasses() {
             [].forEach.call(element.querySelectorAll(childSelector), function(el) {
                 removeClassName(el, 'over');
                 removeClassName(el, 'moving');
             });
         }
-        
         function delegate(fn) {
             return function(e) {
             
-                // Images and links are draggable by default.  Make them trigger events for the parent.
                 if (matchesSelector(e.target, childSelector)) {
                     fn.apply(e.target, [e]);
                 }
+                // Images and links are draggable by default.  Make them trigger events for the parent.
                 else if (e.target.tagName === "IMG" || e.target.tagName === "A") {
                     context = closest(e.target, childSelector);
                     
@@ -155,7 +158,6 @@ nativesortable = (function() {
                         }
                     }
                 }
-                
             }
         }
         
