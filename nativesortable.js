@@ -116,10 +116,6 @@ nativesortable = (function() {
                 e.preventDefault();
             }
             
-            // over class can stick if mousing over an image quickly.
-            //[].forEach.call(element.querySelectorAll(childSelector), function(el) {
-            //    removeClassName(el, 'over');
-            //});
             addClassName(this, 'over');
             return false;
         }
@@ -190,9 +186,7 @@ nativesortable = (function() {
                         }
                         
                         // If a child is initiating the event or ending it, then use the callback for the container.
-                        if (e.type !== "dragleave") {
-                            fn.apply(context, [e]);
-                        }
+                        fn.apply(context, [e]);
                     }
                 }
             }
