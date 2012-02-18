@@ -1,0 +1,53 @@
+<!doctype html>
+<!-- eventually add the attribute -->
+<!-- manifest="/cache.manifest" to the HTML tag -->
+<!--[if lt IE 7]><html class="no-js ie6 oldie" lang="en"><![endif]-->
+<!--[if IE 7]><html class="no-js ie7 oldie" lang="en"><![endif]-->
+<!--[if IE 8]><html class="no-js ie8 oldie" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+    
+    <meta charset="utf-8">
+    <style>
+    
+	#sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+	#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+	#sortable li span { position: absolute; margin-left: -1.3em; }
+	
+	
+	li { background: #eee; border: solid 3px #99a; border-radius: 5px; } 
+	li.over { opacity: .6; background: #333; } 
+	li.moving { opacity: .8; background: #999; border-color: #aad; } 
+	
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+    </style>
+    
+    <link href='nativesortable.css' type='text/css' />
+    
+</head>
+<body>
+    
+    <ul id='sortable'>
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+        <li>Item 4</li>
+        <li>Item 5</li>
+        <li>Item 6</li>
+        <li>Item 7</li>
+        <li>Item 8</li>
+    </ul>
+
+    <script src='nativesortable.js' type='text/javascript'></script>
+    
+    <script>
+        var sortable = document.getElementById("sortable");
+        nativesortable(sortable, "li");
+    </script>
+</body>
+</html>
