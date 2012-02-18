@@ -116,6 +116,10 @@ nativesortable = (function() {
                 e.preventDefault();
             }
             
+            // over class can stick if mousing over an image quickly.
+            //[].forEach.call(element.querySelectorAll(childSelector), function(el) {
+            //    removeClassName(el, 'over');
+            //});
             addClassName(this, 'over');
             return false;
         }
