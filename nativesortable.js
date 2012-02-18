@@ -1,5 +1,5 @@
 // nativesortable
-// Autho: Brian Grinstead MIT License
+// Author: Brian Grinstead MIT License
 // Originally based on code found here:
 // http://www.html5rocks.com/en/tutorials/dnd/basics/#toc-examples
 
