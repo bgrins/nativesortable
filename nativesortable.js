@@ -9,7 +9,6 @@
 
 nativesortable = (function() {
     
-    // Utilities
     function hasClassName(el, name) {
         return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
     }
@@ -71,25 +70,16 @@ nativesortable = (function() {
     }
     
     return function(element, childSelector) {
-    
-        
+
         var currentlyDraggingElement = null;
-        var placeholder = null;
         
         function handleDragStart(e) {
         
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('Text', "*"); // Need to set to something
+            e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
             
             currentlyDraggingElement = this;
             addClassName(currentlyDraggingElement, 'moving');
-            
-            // Code to deal with placeholders (see demo here for an idea: http://jqueryui.com/demos/sortable/)
-            //placeholder = currentlyDraggingElement.cloneNode();
-            //placeholder.style.visibility = "hidden";
-            //placeholder.removeAttribute("draggable");
-            //addClassName(placeholder, "placeholder");
-            
         }
         function handleDragOver(e) {
             if (!currentlyDraggingElement) {
@@ -99,10 +89,6 @@ nativesortable = (function() {
             if (e.preventDefault) {
                 e.preventDefault();
             }
-            
-            //e.dataTransfer.dropEffect = 'move';
-            
-            //e.target.parentNode.insertBefore(placeholder, e.target.nextSibling);
             return false;
         }
         
@@ -111,12 +97,11 @@ nativesortable = (function() {
                 return true;
             }
             
+            addClassName(this, 'over');
+            
             if (e.preventDefault) {
                 e.preventDefault();
             }
-            
-            addClassName(this, 'over');
-            
             return false;
         }
         
@@ -125,6 +110,7 @@ nativesortable = (function() {
         }
         
         function handleDrop(e) {
+        
             if (e.stopPropagation) {
                 e.stopPropagation();
             }
@@ -141,8 +127,14 @@ nativesortable = (function() {
                 // Insert after.
                 this.parentNode.insertBefore(currentlyDraggingElement, this.nextSibling);
             }
-            
-            //placeholder.parentNode.removeChild(placeholder);
+        }
+        
+        function handleDragEnd(e) {
+            currentlyDraggingElement = null;
+            [].forEach.call(element.querySelectorAll(childSelector), function(el) {
+                removeClassName(el, 'over');
+                removeClassName(el, 'moving');
+            });
         }
         
         function delegate(fn) {
@@ -152,7 +144,6 @@ nativesortable = (function() {
                 if (matchesSelector(e.target, childSelector)) {
                     fn.apply(e.target, [e]);
                 }
-                /*
                 else if (e.target.tagName === "IMG" || e.target.tagName === "A") {
                     context = closest(e.target, childSelector);
                     
@@ -164,20 +155,8 @@ nativesortable = (function() {
                         }
                     }
                 }
-                */
+                
             }
-        }
-        
-        function handleDragEnd(e) {
-            
-            //[].forEach.call(element.querySelectorAll(".placeholder"), function(el) {
-            //    el.parentNode.removeChild(el);
-            //});
-            currentlyDraggingElement = null;
-            [].forEach.call(element.querySelectorAll(childSelector), function(el) {
-                removeClassName(el, 'over');
-                removeClassName(el, 'moving');
-            });
         }
         
         element.addEventListener('dragstart', delegate(handleDragStart), false);
