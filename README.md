@@ -4,7 +4,7 @@ No external dependancies.
 
 See demo here: http://bgrins.github.com/nativesortable/
 
-== Usage == 
+## Usage
 
     var list = document.getElementByID("list");
     nativesortable(list, "li" [, { change: onchange }]);
