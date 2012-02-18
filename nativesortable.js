@@ -70,6 +70,18 @@ nativesortable = (function() {
         return null;
     }
     
+    function dragenterData(element, val) {
+        if (arguments.length == 1) {
+            return parseInt(element.getAttribute("data-child-dragenter")) || 0;
+        }
+        else if (!val) {
+            element.removeAttribute("data-child-dragenter");
+        }
+        else {
+            element.setAttribute("data-child-dragenter", val);
+        }
+    }
+    
     return function(element, childSelector, opts) {
         if (!opts) {
             opts = { }; 
@@ -78,7 +90,6 @@ nativesortable = (function() {
         var currentlyDraggingElement = null;
         
         function handleDragStart(e) {
-        
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
             
@@ -105,25 +116,28 @@ nativesortable = (function() {
                 e.preventDefault();
             }
             
-            // over class can stick if mousing over an image quickly.
-            [].forEach.call(element.querySelectorAll(childSelector), function(el) {
-                removeClassName(el, 'over');
-            });
             addClassName(this, 'over');
             return false;
         }
         
         function handleDragLeave(e) {
-            removeClassName(this, 'over');
+            // This is a fix for child elements firing dragenter before the parent fires dragleave
+            if (!dragenterData(this)) {
+                removeClassName(this, 'over');
+                dragenterData(this, false);
+            }
         }
         
         function handleDrop(e) {
-        
             if (e.stopPropagation) {
                 e.stopPropagation();
             }
             if (e.preventDefault) {
                 e.preventDefault();
+            }
+            
+            if (this == currentlyDraggingElement) {
+                return;
             }
             
             if (isBelow(currentlyDraggingElement, this)) {
@@ -146,22 +160,34 @@ nativesortable = (function() {
             [].forEach.call(element.querySelectorAll(childSelector), function(el) {
                 removeClassName(el, 'over');
                 removeClassName(el, 'moving');
+                dragenterData(el, false);
             });
         }
+        
         function delegate(fn) {
+        
             return function(e) {
                 if (matchesSelector(e.target, childSelector)) {
                     fn.apply(e.target, [e]);
                 }
-                // Images and links are draggable by default.  Make them trigger events for the parent.
-                // if (e.target.tagName === "IMG" || e.target.tagName === "A") {
-                else {
+                else if (e.target !== element) {
+                    
                     context = closest(e.target, childSelector);
+                    
                     if (context) {
-                        fn.apply(context, [e]);
+                    
+                        // Prevent dragenter on a child from allowing a dragleave on the container
+                        var previousCounter = dragenterData(context);
+                        if (e.type === "dragenter") {
+                            dragenterData(context, previousCounter + 1);
+                        }
+                        if (e.type === "dragleave") {
+                            dragenterData(context, previousCounter - 1);
+                        }
                         
-                        if (e.type == "dragover" || e.type == "dragleave") {
-                            addClassName(context, 'over');
+                        // If a child is initiating the event or ending it, then use the callback for the container.
+                        if (e.type !== "dragleave") {
+                            fn.apply(context, [e]);
                         }
                     }
                 }
