@@ -1,3 +1,4 @@
+
 // nativesortable
 // Author: Brian Grinstead MIT License
 // Originally based on code found here:
@@ -101,7 +102,10 @@ nativesortable = (function() {
                 e.preventDefault();
             }
             
-            removeDragClasses();
+            // over class can stick if mousing over an image quickly.
+            [].forEach.call(element.querySelectorAll(childSelector), function(el) {
+                removeClassName(el, 'over');
+            });
             addClassName(this, 'over');
             return false;
         }
@@ -132,9 +136,6 @@ nativesortable = (function() {
         
         function handleDragEnd(e) {
             currentlyDraggingElement = null;
-            removeDragClasses();
-        }
-        function removeDragClasses() {
             [].forEach.call(element.querySelectorAll(childSelector), function(el) {
                 removeClassName(el, 'over');
                 removeClassName(el, 'moving');
