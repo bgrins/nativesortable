@@ -10,21 +10,60 @@
     <meta charset="utf-8">
     <style>
     
-	#sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-	#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; min-height: 18px; }
-	#sortable li span { position: absolute; margin-left: -1.3em; }
-	
-	
-	li { background: #eee; border: solid 3px #99a; border-radius: 5px; } 
-	li.over { opacity: .6; background: #333; } 
-	li.moving { opacity: .8; background: #999; border-color: #aad; } 
-	
-[draggable] {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
+	#sortable { 
+	   list-style-type: none; 
+	   margin: 0 auto; 
+	   padding: 0; 
+	   width: 60%; 
+    }
+	#sortable li.moving { 
+	   opacity: .25;
+        -webkit-transition: -webkit-transform 0.2s ease-out;
+        -moz-transition: -moz-transform 0.2s ease-out;    
+	   -webkit-transform: scale(0.8); 
+	   -moz-transform: scale(0.8); 
+	}
+	#sortable li.over  {
+	   border: 2px dashed black;
+	}
+	#sortable li {    
+        float: left;
+        border: 2px solid #666;
+        margin-right: 5px;
+        border-radius: 10px;
+        text-align: center;
+        cursor: move;
+        margin-bottom: 30px;
+        padding: 20px;
+    }
+    #sortable li .number {
+        height: 150px;
+        background-color: #CCC;
+        width: 150px;
+        line-height: 100px;
+        font-size: 60px;
+        font-family: Georgia;
+    }
+    #sortable a {
+        text-decoration:none;
+    }
+    #sortable li .header {
+        color: white;
+        height: 20px;
+        text-shadow: black 0 1px;
+        box-shadow: 5px;
+        padding: 5px;
+        background: rgba(64, 64, 128, .3);
+        border-bottom: 1px solid #DDD;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    [draggable] {
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
     </style>
     
     <link href='nativesortable.css' type='text/css' />
@@ -33,14 +72,14 @@
 <body>
     
     <ul id='sortable'>
-        <li><img src='Canada.gif' />Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-        <li><a href='#'>Item 4</a></li>
-        <li>Item 5</li>
-        <li>Item 6</li>
-        <li>Item 7</li>
-        <li>Item 8</li>
+        <li><div class='header'>Item 1</div><div class='number'><img src='Canada.gif' /></div></li>
+        <li><div class='header'>Item 2</div><div class='number'><a href='#'>2</a></div></li>
+        <li><div class='header'>Item 3</div><div class='number'><a href='#'>3</a></div></li>
+        <li><div class='header'>Item 4</div><div class='number'><a href='#'>4</a></div></li>
+        <li><div class='header'>Item 5</div><div class='number'><a href='#'>5</a></div></li>
+        <li><div class='header'>Item 6</div><div class='number'><a href='#'>6</a></div></li>
+        <li><div class='header'>Item 7</div><div class='number'><a href='#'>7</a></div></li>
+        <li><div class='header'>Item 8</div><div class='number'><a href='#'>8</a></div></li>
     </ul>
 
     <script src='nativesortable.js' type='text/javascript'></script>

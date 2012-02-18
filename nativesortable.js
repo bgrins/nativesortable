@@ -150,14 +150,13 @@ nativesortable = (function() {
         }
         function delegate(fn) {
             return function(e) {
-            
                 if (matchesSelector(e.target, childSelector)) {
                     fn.apply(e.target, [e]);
                 }
                 // Images and links are draggable by default.  Make them trigger events for the parent.
-                else if (e.target.tagName === "IMG" || e.target.tagName === "A") {
+                // if (e.target.tagName === "IMG" || e.target.tagName === "A") {
+                else {
                     context = closest(e.target, childSelector);
-                    
                     if (context) {
                         fn.apply(context, [e]);
                         
