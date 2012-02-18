@@ -6,7 +6,7 @@
 
 // Usage:
 // var list = document.getElementByID("list");
-// nativesortable(list, "li");
+// nativesortable(list, "li" [, { change: onchange }]);
 
 nativesortable = (function() {
     
@@ -70,8 +70,11 @@ nativesortable = (function() {
         return null;
     }
     
-    return function(element, childSelector) {
-
+    return function(element, childSelector, opts) {
+        if (!opts) {
+            opts = { }; 
+        }
+        
         var currentlyDraggingElement = null;
         
         function handleDragStart(e) {
@@ -131,6 +134,10 @@ nativesortable = (function() {
             else {
                 // Insert after.
                 this.parentNode.insertBefore(currentlyDraggingElement, this.nextSibling);
+            }
+            
+            if (opts.change) {
+                opts.change(this, currentlyDraggingElement);
             }
         }
         

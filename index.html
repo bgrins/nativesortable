@@ -25,12 +25,6 @@
   -webkit-user-select: none;
   user-select: none;
 }
-[draggable] * {
-  -moz-user-drag: none;
-  -khtml-user-drag: none;
-  -webkit-user-drag: none;
-  user-drag: none;
-}
     </style>
     
     <link href='nativesortable.css' type='text/css' />
@@ -53,7 +47,11 @@
     
     <script>
         var sortable = document.getElementById("sortable");
-        nativesortable(sortable, "li");
+        nativesortable(sortable, "li", {
+            change: function() {
+            
+            }
+        });
     </script>
 </body>
 </html>
