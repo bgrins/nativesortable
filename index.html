@@ -11,7 +11,7 @@
     <style>
     
 	#sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-	#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+	#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; min-height: 18px; }
 	#sortable li span { position: absolute; margin-left: -1.3em; }
 	
 	
@@ -25,6 +25,12 @@
   -webkit-user-select: none;
   user-select: none;
 }
+[draggable] * {
+  -moz-user-drag: none;
+  -khtml-user-drag: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
     </style>
     
     <link href='nativesortable.css' type='text/css' />
@@ -33,10 +39,10 @@
 <body>
     
     <ul id='sortable'>
-        <li>Item 1</li>
+        <li><img src='Canada.gif' />Item 1</li>
         <li>Item 2</li>
         <li>Item 3</li>
-        <li>Item 4</li>
+        <li><a href='#'>Item 4</a></li>
         <li>Item 5</li>
         <li>Item 6</li>
         <li>Item 7</li>
