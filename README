@@ -1,3 +1,5 @@
 An implementation of HTML5 Drag and Drop API to provide a sortable list of items.
 
 No external dependancies.
+
+See demo here: http://bgrins.github.com/nativesortable/
