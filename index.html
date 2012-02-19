@@ -4,23 +4,23 @@
     
     <meta charset="utf-8">
     <style>
-	#sortable { 
+	.sortable { 
 	   list-style-type: none; 
 	   margin: 0 auto; 
 	   padding: 0; 
-	   width: 60%; 
+	   width: 80%; 
     }
-	#sortable li.moving { 
+	.sortable li.moving{ 
 	   opacity: .25;
         -webkit-transition: -webkit-transform 0.2s ease-out;
         -moz-transition: -moz-transform 0.2s ease-out;    
 	   -webkit-transform: scale(0.8); 
 	   -moz-transform: scale(0.8); 
 	}
-	#sortable li.over  {
-	   border: 2px dashed black;
+	.sortable li.over {
+	   opacity: .25;
 	}
-	#sortable li {    
+	.sortable li {    
         float: left;
         border: 2px solid #666;
         margin-right: 5px;
@@ -28,21 +28,22 @@
         text-align: center;
         cursor: move;
         margin-bottom: 30px;
-        padding: 20px;
-        padding-top:0;
+        padding: 0;
+        padding-bottom: 10px;
+        background-color: orange;
     }
-    #sortable li .number {
-        height: 150px;
-        background-color: #CCC;
-        width: 150px;
+    .sortable li .number {
+        height: 100px;
+        width: 100px;
+        background-color: rgba(200, 200, 200, .6);
         line-height: 100px;
         font-size: 60px;
         font-family: Georgia;
     }
-    #sortable a {
+    .sortable a {
         text-decoration:none;
     }
-    #sortable li .header {
+    .sortable li .header {
         color: white;
         height: 20px;
         text-shadow: black 0 1px;
@@ -52,6 +53,10 @@
         border-bottom: 1px solid #DDD;
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
+    }
+    
+    #sortable-warp li {
+        background-color: red;
     }
     [draggable] {
       -moz-user-select: none;
@@ -78,7 +83,7 @@
     <h2>Demo</h2>
     <p>Sort the list below:</p>
     
-    <ul id='sortable'>
+    <ul id='sortable' class='sortable'>
         <li><div class='header'>Item <strong>1</strong></div><div class='number'><a href='#'>1</a></div></li>
         <li><div class='header'>Item <strong>2</strong></div><div class='number'><a href='#'>2</a></div></li>
         <li><div class='header'>Item <strong>3</strong></div><div class='number'><a href='#'>3</a></div></li>
@@ -98,6 +103,31 @@
     </ul>
     
     <br style='clear:both;' />
+    
+    
+    <p>Warp the list below:</p>
+    
+    <ul id='sortable-warp' class='sortable'>
+        <li><div class='header'>Item <strong>1</strong></div><div class='number'><a href='#'>1</a></div></li>
+        <li><div class='header'>Item <strong>2</strong></div><div class='number'><a href='#'>2</a></div></li>
+        <li><div class='header'>Item <strong>3</strong></div><div class='number'><a href='#'>3</a></div></li>
+        <li><div class='header'>Item <strong>4</strong></div><div class='number'><a href='#'>4</a></div></li>
+        <li><div class='header'>Item <strong>5</strong></div><div class='number'><a href='#'>5</a></div></li>
+        <li><div class='header'>Item <strong>6</strong></div><div class='number'><a href='#'>6</a></div></li>
+        <li><div class='header'>Item <strong>7</strong></div><div class='number'><a href='#'>7</a></div></li>
+        <li><div class='header'>Item <strong>8</strong></div><div class='number'><a href='#'>8</a></div></li>
+        <li><div class='header'>Item <strong>9</strong></div><div class='number'><a href='#'>9</a></div></li>
+        <li><div class='header'>Item <strong>10</strong></div><div class='number'><a href='#'>10</a></div></li>
+        <li><div class='header'>Item <strong>11</strong></div><div class='number'><a href='#'>11</a></div></li>
+        <li><div class='header'>Item <strong>12</strong></div><div class='number'><a href='#'>12</a></div></li>
+        <li><div class='header'>Item <strong>13</strong></div><div class='number'><a href='#'>13</a></div></li>
+        <li><div class='header'>Item <strong>14</strong></div><div class='number'><a href='#'>14</a></div></li>
+        <li><div class='header'>Item <strong>15</strong></div><div class='number'><a href='#'>15</a></div></li>
+        <li><div class='header'>Item <strong>16</strong></div><div class='number'><a href='#'>16</a></div></li>
+    </ul>
+    
+    <br style='clear:both;' />
+    
     <h2>Usage</h2>
     
     <a href='https://github.com/bgrins/nativesortable'>See the project repository for usage information.</a>
@@ -111,6 +141,14 @@
             change: function() {
             
             }
+        });
+        
+        var sortableWarp = document.getElementById("sortable-warp");
+        nativesortable(sortableWarp, "li", {
+            change: function() {
+            
+            },
+            warp: true
         });
     </script>
 </body>

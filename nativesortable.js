@@ -36,11 +36,12 @@ nativesortable = (function() {
             return el.mozMatchesSelector(selector);
         if (el.msMatchesSelector)
             return el.msMatchesSelector(selector);
+        if (el.oMatchesSelector)
+            return el.oMatchesSelector(selector);
         return false;
     }
     
     function isBelow(el1, el2) {
-    
         var parent = el1.parentNode;
         if (el2.parentNode != parent) {
             return false;
@@ -78,7 +79,7 @@ nativesortable = (function() {
             element.removeAttribute("data-child-dragenter");
         }
         else {
-            element.setAttribute("data-child-dragenter", val);
+            element.setAttribute("data-child-dragenter", Math.max(0, val));
         }
     }
     
@@ -86,6 +87,8 @@ nativesortable = (function() {
         if (!opts) {
             opts = { }; 
         }
+        
+        var warp = !!opts.warp;
         
         var currentlyDraggingElement = null;
         
@@ -96,6 +99,7 @@ nativesortable = (function() {
             currentlyDraggingElement = this;
             addClassName(currentlyDraggingElement, 'moving');
         }
+        
         function handleDragOver(e) {
             if (!currentlyDraggingElement) {
                 return true;
@@ -108,7 +112,7 @@ nativesortable = (function() {
         }
         
         function handleDragEnter(e) {
-            if (!currentlyDraggingElement) {
+            if (!currentlyDraggingElement || currentlyDraggingElement === this) {
                 return true;
             }
             
@@ -116,18 +120,24 @@ nativesortable = (function() {
                 e.preventDefault();
             }
             
-            if (!dragenterData(this) && currentlyDraggingElement != this) {
+            // Prevent dragenter on a child from allowing a dragleave on the container
+            var previousCounter = dragenterData(this);
+            dragenterData(this, previousCounter + 1);
+            
+            if (previousCounter == 0) {
                 
                 addClassName(this, 'over');
                 
-                if (isBelow(currentlyDraggingElement, this)) {
-                    // Insert before.
-                    this.parentNode.insertBefore(currentlyDraggingElement, this);
-                
-                }
-                else {
-                    // Insert after.
-                    this.parentNode.insertBefore(currentlyDraggingElement, this.nextSibling);
+                if (!warp) {
+                    if (isBelow(currentlyDraggingElement, this)) {
+                        // Insert currently dragging element before.
+                        this.parentNode.insertBefore(currentlyDraggingElement, this);
+                    
+                    }
+                    else {
+                        // Insert currently dragging element after.
+                        this.parentNode.insertBefore(currentlyDraggingElement, this.nextSibling);
+                    }
                 }
             }
             
@@ -135,6 +145,11 @@ nativesortable = (function() {
         }
         
         function handleDragLeave(e) {
+            
+            // Prevent dragenter on a child from allowing a dragleave on the container
+            var previousCounter = dragenterData(this);
+            dragenterData(this, previousCounter - 1);
+                            
             // This is a fix for child elements firing dragenter before the parent fires dragleave
             if (!dragenterData(this)) {
                 removeClassName(this, 'over');
@@ -150,8 +165,14 @@ nativesortable = (function() {
                 e.preventDefault();
             }
             
-            if (this == currentlyDraggingElement) {
+            if (this === currentlyDraggingElement) {
                 return;
+            }
+            
+            if (warp) { 
+                var thisSibling = currentlyDraggingElement.nextSibling;
+                this.parentNode.insertBefore(currentlyDraggingElement, this);
+                this.parentNode.insertBefore(this, thisSibling);
             }
             
             if (opts.change) {
@@ -169,27 +190,14 @@ nativesortable = (function() {
         }
         
         function delegate(fn) {
-        
             return function(e) {
                 if (matchesSelector(e.target, childSelector)) {
                     fn.apply(e.target, [e]);
                 }
                 else if (e.target !== element) {
-                    
-                    context = closest(e.target, childSelector);
-                    
+                    // If a child is initiating the event or ending it, then use the container as context for the callback.
+                    var context = closest(e.target, childSelector);
                     if (context) {
-                    
-                        // Prevent dragenter on a child from allowing a dragleave on the container
-                        var previousCounter = dragenterData(context);
-                        if (e.type === "dragenter") {
-                            dragenterData(context, previousCounter + 1);
-                        }
-                        if (e.type === "dragleave") {
-                            dragenterData(context, previousCounter - 1);
-                        }
-                        
-                        // If a child is initiating the event or ending it, then use the callback for the container.
                         fn.apply(context, [e]);
                     }
                 }
