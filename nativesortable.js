@@ -77,6 +77,7 @@ nativesortable = (function() {
         var warp = !!opts.warp;
         var stop = opts.stop || function() { };
         var start = opts.start || function() { };
+        var change = opts.change || function() { };
         
         var currentlyDraggingElement = null;
         
@@ -168,9 +169,7 @@ nativesortable = (function() {
                 this.parentNode.insertBefore(this, thisSibling);
             }
             
-            if (opts.change) {
-                opts.change(this, currentlyDraggingElement);
-            }
+            change(this, currentlyDraggingElement);
         }
         
         function handleDragEnd(e) {
