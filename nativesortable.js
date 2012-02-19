@@ -10,12 +10,12 @@
 
 nativesortable = (function() {
     
-    var supportsDragAndDrop = (function() {
+    var supportsTouch = ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch);
+    var supportsDragAndDrop = !supportsTouch && (function() {
         var div = document.createElement('div');
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
     })();
     
-    var supportsTouch = ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch);
     
     function hasClassName(el, name) {
         return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
@@ -79,6 +79,15 @@ nativesortable = (function() {
         }
         return null;
     }
+    function prevent(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+        e.returnValue = false;
+    }
     
     function dragenterData(element, val) {
         if (arguments.length == 1) {
@@ -105,6 +114,9 @@ nativesortable = (function() {
         var currentlyDraggingElement = null;
         
         var handleDragStart = delegate(function(e) {
+            if (supportsTouch) {
+                prevent(e);
+            }
             
             if (e.dataTransfer) {
                 e.dataTransfer.effectAllowed = 'move';
@@ -136,10 +148,10 @@ nativesortable = (function() {
         });
         
         var handleDragEnter = delegate(function(e) {
+        
             if (!currentlyDraggingElement || currentlyDraggingElement === this) {
                 return true;
             }
-            
             if (e.preventDefault) {
                 e.preventDefault();
             }
@@ -228,7 +240,7 @@ nativesortable = (function() {
                     // If a child is initiating the event or ending it, then use the container as context for the callback.
                     var context = closest(e.target, "sortable-child");
                     
-                    if (e.type == 'dragstart' || e.type == 'mousedown') {
+                    if (e.type == 'dragstart' || e.type == 'mousedown' || e.type == 'touchstart') {
                         context = moveUpToChildNode(element, e.target);
                     }
                     if (context) {
@@ -242,30 +254,39 @@ nativesortable = (function() {
         // Bind standard mouse/touch events as a polyfill.
         function addFakeDragHandlers() {
             if (!supportsDragAndDrop) {
-                element.addEventListener('mouseover', handleDragEnter, false);
-                element.addEventListener('mouseout', handleDragLeave, false);
-                element.addEventListener('mouseup', handleDrop, false);
-                document.addEventListener("mouseup", handleDragEnd, false);
+                element.addEventListener(supportsTouch ? 'touchmove' : 'mouseover', handleDragEnter, false);
+                element.addEventListener(supportsTouch ? 'touchmove' : 'mouseout', handleDragLeave, false);
+                element.addEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDrop, false);
+                document.addEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDragEnd, false);
+                document.addEventListener("selectstart", prevent, false);
+                document.addEventListener("dragstart", prevent, false);
+            
             }
         
         }
         function removeFakeDragHandlers() {
             if (!supportsDragAndDrop) {
+                
                 element.removeEventListener('mouseover', handleDragEnter, false);
                 element.removeEventListener('mouseout', handleDragLeave, false);
-                element.removeEventListener('mouseup', handleDrop, false);
-                document.removeEventListener("mouseup", handleDragEnd, false);
+                element.removeEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDrop, false);
+                document.removeEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDragEnd, false);
+                document.removeEventListener("selectstart", prevent, false);
+                document.removeEventListener("dragstart", prevent, false);
             }
         }
         
-        element.addEventListener(supportsDragAndDrop ? 'dragstart' : 'mousedown', handleDragStart, false);
         
         if (supportsDragAndDrop) {
+            element.addEventListener('dragstart', handleDragStart, false);
             element.addEventListener('dragenter', handleDragEnter, false);
             element.addEventListener('dragleave', handleDragLeave, false);
             element.addEventListener('drop', handleDrop, false);
             element.addEventListener('dragover', handleDragOver, false);
             element.addEventListener('dragend', handleDragEnd, false);
+        }
+        else {
+            element.addEventListener(supportsTouch ? 'touchstart' : 'mousedown', handleDragStart, false);
         }
         
         [].forEach.call(element.childNodes, function(el) {
