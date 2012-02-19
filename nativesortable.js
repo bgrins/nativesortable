@@ -116,7 +116,21 @@ nativesortable = (function() {
                 e.preventDefault();
             }
             
-            addClassName(this, 'over');
+            if (!dragenterData(this) && currentlyDraggingElement != this) {
+                
+                addClassName(this, 'over');
+                
+                if (isBelow(currentlyDraggingElement, this)) {
+                    // Insert before.
+                    this.parentNode.insertBefore(currentlyDraggingElement, this);
+                
+                }
+                else {
+                    // Insert after.
+                    this.parentNode.insertBefore(currentlyDraggingElement, this.nextSibling);
+                }
+            }
+            
             return false;
         }
         
@@ -138,16 +152,6 @@ nativesortable = (function() {
             
             if (this == currentlyDraggingElement) {
                 return;
-            }
-            
-            if (isBelow(currentlyDraggingElement, this)) {
-                // Insert before.
-                this.parentNode.insertBefore(currentlyDraggingElement, this);
-            
-            }
-            else {
-                // Insert after.
-                this.parentNode.insertBefore(currentlyDraggingElement, this.nextSibling);
             }
             
             if (opts.change) {
