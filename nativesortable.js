@@ -15,6 +15,8 @@ nativesortable = (function() {
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
     })();
     
+    var supportsTouch = ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch);
+    
     function hasClassName(el, name) {
         return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
     }
@@ -28,7 +30,7 @@ nativesortable = (function() {
     function removeClassName(el, name) {
         if (hasClassName(el, name)) {
           var c = el.className;
-          el.className = c.replace(new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)", "g"), "");
+          el.className = c.replace(new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)", "g"), " ").replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         }
     }
     
@@ -61,6 +63,22 @@ nativesortable = (function() {
         }
         return null;
     }
+    function moveUpToChildNode(parent, child) {
+        var cur = child;
+        if (cur == parent) { return null; }
+        
+        while (cur) {
+            if (cur.parentNode === parent) {
+                return cur;
+            }
+            
+            cur = cur.parentNode;
+            if ( !cur || !cur.ownerDocument || cur.nodeType === 11 ) {
+                break;
+            }
+        }
+        return null;
+    }
     
     function dragenterData(element, val) {
         if (arguments.length == 1) {
@@ -86,20 +104,27 @@ nativesortable = (function() {
         
         var currentlyDraggingElement = null;
         
-        function handleDragStart(e) {
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
+        var handleDragStart = delegate(function(e) {
+            
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
+            }
             
             currentlyDraggingElement = this;
             addClassName(currentlyDraggingElement, 'moving');
+            
             [].forEach.call(element.childNodes, function(el) {
                 if (el.nodeType === 1) {
                     addClassName(el, 'sortable-child');
                 }
             });
-        }
+            
+            
+            addFakeDragHandlers();
+        });
         
-        function handleDragOver(e) {
+        var handleDragOver = delegate(function(e) {
             if (!currentlyDraggingElement) {
                 return true;
             }
@@ -108,9 +133,9 @@ nativesortable = (function() {
                 e.preventDefault();
             }
             return false;
-        }
+        });
         
-        function handleDragEnter(e) {
+        var handleDragEnter = delegate(function(e) {
             if (!currentlyDraggingElement || currentlyDraggingElement === this) {
                 return true;
             }
@@ -141,9 +166,9 @@ nativesortable = (function() {
             }
             
             return false;
-        }
+        });
         
-        function handleDragLeave(e) {
+        var handleDragLeave = delegate(function(e) {
             
             // Prevent dragenter on a child from allowing a dragleave on the container
             var previousCounter = dragenterData(this);
@@ -154,16 +179,18 @@ nativesortable = (function() {
                 removeClassName(this, 'over');
                 dragenterData(this, false);
             }
-        }
+        });
         
-        function handleDrop(e) {
-            if (e.stopPropagation) {
-                e.stopPropagation();
+        var handleDrop = delegate(function(e) {
+        
+            if (e.type === 'drop') {
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                }
+                if (e.preventDefault) {
+                    e.preventDefault();
+                }
             }
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-            
             if (this === currentlyDraggingElement) {
                 return;
             }
@@ -175,9 +202,10 @@ nativesortable = (function() {
             }
             
             change(this, currentlyDraggingElement);
-        }
+        });
         
-        function handleDragEnd(e) {
+        var handleDragEnd = function(e) {
+
             currentlyDraggingElement = null;
             [].forEach.call(element.childNodes, function(el) {
                 if (el.nodeType === 1) {
@@ -187,16 +215,22 @@ nativesortable = (function() {
                     dragenterData(el, false);
                 }
             });
-        }
+            
+            removeFakeDragHandlers();
+        };
         
         function delegate(fn) {
             return function(e) {
-                if (e.type == 'dragstart' || hasClassName(e.target, "sortable-child")) {
+                if (hasClassName(e.target, "sortable-child")) {
                     fn.apply(e.target, [e]);
                 }
                 else if (e.target !== element) {
                     // If a child is initiating the event or ending it, then use the container as context for the callback.
                     var context = closest(e.target, "sortable-child");
+                    
+                    if (e.type == 'dragstart' || e.type == 'mousedown') {
+                        context = moveUpToChildNode(element, e.target);
+                    }
                     if (context) {
                         fn.apply(context, [e]);
                     }
@@ -204,13 +238,36 @@ nativesortable = (function() {
             }
         }
         
-        element.addEventListener('dragstart', delegate(handleDragStart), false);
-        element.addEventListener('dragenter', delegate(handleDragEnter), false)
-        element.addEventListener('dragover', delegate(handleDragOver), false);
-        element.addEventListener('dragleave', delegate(handleDragLeave), false);
-        element.addEventListener('drop', delegate(handleDrop), false);
-        element.addEventListener('dragend', delegate(handleDragEnd), false);
-
+        // Opera and mobile devices do not support drag and drop.  http://caniuse.com/dragndrop
+        // Bind standard mouse/touch events as a polyfill.
+        function addFakeDragHandlers() {
+            if (!supportsDragAndDrop) {
+                element.addEventListener('mouseover', handleDragEnter, false);
+                element.addEventListener('mouseout', handleDragLeave, false);
+                element.addEventListener('mouseup', handleDrop, false);
+                document.addEventListener("mouseup", handleDragEnd, false);
+            }
+        
+        }
+        function removeFakeDragHandlers() {
+            if (!supportsDragAndDrop) {
+                element.removeEventListener('mouseover', handleDragEnter, false);
+                element.removeEventListener('mouseout', handleDragLeave, false);
+                element.removeEventListener('mouseup', handleDrop, false);
+                document.removeEventListener("mouseup", handleDragEnd, false);
+            }
+        }
+        
+        element.addEventListener(supportsDragAndDrop ? 'dragstart' : 'mousedown', handleDragStart, false);
+        
+        if (supportsDragAndDrop) {
+            element.addEventListener('dragenter', handleDragEnter, false);
+            element.addEventListener('dragleave', handleDragLeave, false);
+            element.addEventListener('drop', handleDrop, false);
+            element.addEventListener('dragover', handleDragOver, false);
+            element.addEventListener('dragend', handleDragEnd, false);
+        }
+        
         [].forEach.call(element.childNodes, function(el) {
             if (el.nodeType === 1) {
                 el.setAttribute("draggable", "true");
