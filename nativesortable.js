@@ -10,6 +10,11 @@
 
 nativesortable = (function() {
     
+    var supportsDragAndDrop = (function() {
+        var div = document.createElement('div');
+        return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
+    })();
+    
     function hasClassName(el, name) {
         return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
     }
