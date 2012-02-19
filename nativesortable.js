@@ -6,7 +6,7 @@
 
 // Usage:
 // var list = document.getElementByID("list");
-// nativesortable(list, "li" [, { change: onchange }]);
+// nativesortable(list, { change: onchange });
 
 nativesortable = (function() {
     
@@ -27,20 +27,6 @@ nativesortable = (function() {
         }
     }
     
-    function matchesSelector(el, selector) {
-        if (el.matchesSelector)
-            return el.matchesSelector(selector);
-        if (el.webkitMatchesSelector)
-            return el.webkitMatchesSelector(selector);
-        if (el.mozMatchesSelector)
-            return el.mozMatchesSelector(selector);
-        if (el.msMatchesSelector)
-            return el.msMatchesSelector(selector);
-        if (el.oMatchesSelector)
-            return el.oMatchesSelector(selector);
-        return false;
-    }
-    
     function isBelow(el1, el2) {
         var parent = el1.parentNode;
         if (el2.parentNode != parent) {
@@ -57,10 +43,10 @@ nativesortable = (function() {
         return false;
     }
     
-    function closest(child, selector) {
+    function closest(child, className) {
         var cur = child;
         while (cur) {
-            if (matchesSelector(cur, selector)) {
+            if (hasClassName(cur, className)) {
                 return cur;
             }
             cur = cur.parentNode;
@@ -83,12 +69,14 @@ nativesortable = (function() {
         }
     }
     
-    return function(element, childSelector, opts) {
+    return function(element, opts) {
         if (!opts) {
             opts = { }; 
         }
         
         var warp = !!opts.warp;
+        var stop = opts.stop || function() { };
+        var start = opts.start || function() { };
         
         var currentlyDraggingElement = null;
         
@@ -98,6 +86,11 @@ nativesortable = (function() {
             
             currentlyDraggingElement = this;
             addClassName(currentlyDraggingElement, 'moving');
+            [].forEach.call(element.childNodes, function(el) {
+                if (el.nodeType === 1) {
+                    addClassName(el, 'sortable-child');
+                }
+            });
         }
         
         function handleDragOver(e) {
@@ -182,21 +175,24 @@ nativesortable = (function() {
         
         function handleDragEnd(e) {
             currentlyDraggingElement = null;
-            [].forEach.call(element.querySelectorAll(childSelector), function(el) {
-                removeClassName(el, 'over');
-                removeClassName(el, 'moving');
-                dragenterData(el, false);
+            [].forEach.call(element.childNodes, function(el) {
+                if (el.nodeType === 1) {
+                    removeClassName(el, 'over');
+                    removeClassName(el, 'moving');
+                    removeClassName(el, 'sortable-child');
+                    dragenterData(el, false);
+                }
             });
         }
         
         function delegate(fn) {
             return function(e) {
-                if (matchesSelector(e.target, childSelector)) {
+                if (e.type == 'dragstart' || hasClassName(e.target, "sortable-child")) {
                     fn.apply(e.target, [e]);
                 }
                 else if (e.target !== element) {
                     // If a child is initiating the event or ending it, then use the container as context for the callback.
-                    var context = closest(e.target, childSelector);
+                    var context = closest(e.target, "sortable-child");
                     if (context) {
                         fn.apply(context, [e]);
                     }
@@ -211,8 +207,10 @@ nativesortable = (function() {
         element.addEventListener('drop', delegate(handleDrop), false);
         element.addEventListener('dragend', delegate(handleDragEnd), false);
 
-        [].forEach.call(element.querySelectorAll(childSelector), function(el) {
-            el.setAttribute("draggable", "true");
+        [].forEach.call(element.childNodes, function(el) {
+            if (el.nodeType === 1) {
+                el.setAttribute("draggable", "true");
+            }
         });
     }
 })();

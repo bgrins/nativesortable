@@ -7,7 +7,7 @@ See demo here: http://bgrins.github.com/nativesortable/
 ## Usage
 
     var list = document.getElementByID("list");
-    nativesortable(list, "li" [, { change: onchange }]);
+    nativesortable(list, { change: onchange });
 
 I would also recommend adding the following CSS to make sure that:
 
