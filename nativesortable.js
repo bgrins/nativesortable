@@ -35,11 +35,11 @@ nativesortable = (function() {
     
     function moveElementNextTo(element, elementToMoveNextTo) {
         if (isBelow(element, elementToMoveNextTo)) {
-            // Insert currently dragging element before.
+            // Insert element before to elementToMoveNextTo.
             elementToMoveNextTo.parentNode.insertBefore(element, elementToMoveNextTo);
         }
         else {
-            // Insert currently dragging element after.
+            // Insert element after to elementToMoveNextTo.
             elementToMoveNextTo.parentNode.insertBefore(element, elementToMoveNextTo.nextSibling);
         }
     }
@@ -60,19 +60,6 @@ nativesortable = (function() {
         return false;
     }
     
-    function closest(child, className) {
-        var cur = child;
-        while (cur) {
-            if (hasClassName(cur, className)) {
-                return cur;
-            }
-            cur = cur.parentNode;
-            if ( !cur || !cur.ownerDocument || cur.nodeType === 11 ) {
-                break;
-            }
-        }
-        return null;
-    }
     function moveUpToChildNode(parent, child) {
         var cur = child;
         if (cur == parent) { return null; }
@@ -89,6 +76,7 @@ nativesortable = (function() {
         }
         return null;
     }
+    
     function prevent(e) {
         if (e.stopPropagation) {
             e.stopPropagation();
@@ -122,6 +110,7 @@ nativesortable = (function() {
         var change = opts.change || function() { };
         
         var currentlyDraggingElement = null;
+        var currentlyDraggingTarget = null;
         
         var handleDragStart = delegate(function(e) {
             if (supportsTouch) {
@@ -129,7 +118,7 @@ nativesortable = (function() {
             }
             
             if (e.dataTransfer) {
-                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.effectAllowed = 'copy';
                 e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
             }
             
@@ -193,7 +182,6 @@ nativesortable = (function() {
         });
         
         var handleDrop = delegate(function(e) {
-            alert("drop")
             if (e.type === 'drop') {
                 if (e.stopPropagation) {
                     e.stopPropagation();
@@ -218,6 +206,7 @@ nativesortable = (function() {
         var handleDragEnd = function(e) {
 
             currentlyDraggingElement = null;
+            currentlyDraggingTarget = null;
             [].forEach.call(element.childNodes, function(el) {
                 if (el.nodeType === 1) {
                     removeClassName(el, 'over');
@@ -232,31 +221,31 @@ nativesortable = (function() {
         
         var handleTouchMove = delegate(function(e) {
         
-            if (!currentlyDraggingElement || currentlyDraggingElement === this) {
+            if (!currentlyDraggingElement || 
+                currentlyDraggingElement === this ||
+                currentlyDraggingTarget === this) {
                 return true;
             }
-        
-            var active = this;
+            
             [].forEach.call(element.childNodes, function(el) {
-                if (el == active) {
-                    if (!warp) {
-                        moveElementNextTo(currentlyDraggingElement, el);
-                    }
-                    else {
-                        addClassName(el, 'over');
-                    }
-                }
-                else {
-                    removeClassName(el, 'over');
-                }
+                removeClassName(el, 'over');
             });
+            
+            currentlyDraggingTarget = this;
+            
+            if (!warp) {
+                moveElementNextTo(currentlyDraggingElement, this);
+            }
+            else {
+                addClassName(this, 'over');
+            }
             
             return prevent(e);
         });
         
         function delegate(fn) {
             return function(e) {
-                var touch = (supportsTouch && e.touches && e.touches[0]) || {};
+                var touch = (supportsTouch && e.touches && e.touches[0]) || { };
                 var target = touch.target || e.target;
                 
                 // Fix event.target for a touch event
@@ -269,11 +258,7 @@ nativesortable = (function() {
                 }
                 else if (target !== element) {
                     // If a child is initiating the event or ending it, then use the container as context for the callback.
-                    var context = closest(target, "sortable-child");
-                    
-                    if (e.type == 'dragstart' || e.type == 'mousedown' || e.type == 'touchstart' || e.type == 'touchend') {
-                        context = moveUpToChildNode(element, target);
-                    }
+                    var context = moveUpToChildNode(element, target);
                     if (context) {
                         fn.apply(context, [e]);
                     }
@@ -282,10 +267,9 @@ nativesortable = (function() {
         }
         
         // Opera and mobile devices do not support drag and drop.  http://caniuse.com/dragndrop
-        // Bind standard mouse/touch events as a polyfill.
+        // Bind/unbind standard mouse/touch events as a polyfill.
         function addFakeDragHandlers() {
             if (!supportsDragAndDrop) {
-            
                 if (supportsTouch) {
                     element.addEventListener("touchmove", handleTouchMove, false);
                 }
@@ -301,9 +285,9 @@ nativesortable = (function() {
             }
         
         }
+
         function removeFakeDragHandlers() {
             if (!supportsDragAndDrop) {
-            
                 if (supportsTouch) {
                     element.removeEventListener("touchmove", handleTouchMove, false);
                 }
@@ -317,12 +301,6 @@ nativesortable = (function() {
                 document.removeEventListener("selectstart", prevent, false);
             }
         }
-        
-        [].forEach.call(element.childNodes, function(el) {
-            if (el.nodeType === 1) {
-                el.setAttribute("draggable", "true");
-            }
-        });
         
         if (supportsDragAndDrop) {
             element.addEventListener('dragstart', handleDragStart, false);
@@ -340,6 +318,13 @@ nativesortable = (function() {
                 element.addEventListener('mousedown', handleDragStart, false);
             }
         }
+        
+        
+        [].forEach.call(element.childNodes, function(el) {
+            if (el.nodeType === 1) {
+                el.setAttribute("draggable", "true");
+            }
+        });
         
     }
 })();
