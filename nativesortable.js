@@ -261,8 +261,7 @@ nativesortable = (function() {
                 
                 // Fix event.target for a touch event
                 if (supportsTouch && document.elementFromPoint) {
-                    //alert(document.body.scrollTop + " " + e.pageY);
-                    target = document.elementFromPoint(e.pageX + document.body.scrollLeft, e.pageY + document.body.scrollTop);
+                    target = document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - document.body.scrollTop);
                 }
                 
                 if (hasClassName(target, "sortable-child")) {
