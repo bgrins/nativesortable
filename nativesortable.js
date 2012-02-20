@@ -16,6 +16,10 @@ nativesortable = (function() {
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
     })();
     
+    var CHILD_CLASS = "sortable-child";
+    var DRAGGING_CLASS = "sortable-dragging";
+    var OVER_CLASS = "sortable-over";
+    
     function hasClassName(el, name) {
         return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
     }
@@ -118,16 +122,16 @@ nativesortable = (function() {
             }
             
             if (e.dataTransfer) {
-                e.dataTransfer.effectAllowed = 'copy';
+                e.dataTransfer.effectAllowed = 'moving';
                 e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
             }
             
             currentlyDraggingElement = this;
-            addClassName(currentlyDraggingElement, 'moving');
+            addClassName(currentlyDraggingElement, DRAGGING_CLASS);
             
             [].forEach.call(element.childNodes, function(el) {
                 if (el.nodeType === 1) {
-                    addClassName(el, 'sortable-child');
+                    addClassName(el, CHILD_CLASS);
                 }
             });
             
@@ -158,7 +162,7 @@ nativesortable = (function() {
             
             if (previousCounter == 0) {
                 
-                addClassName(this, 'over');
+                addClassName(this, OVER_CLASS);
                 
                 if (!warp) {
                     moveElementNextTo(currentlyDraggingElement, this);
@@ -176,7 +180,7 @@ nativesortable = (function() {
                             
             // This is a fix for child elements firing dragenter before the parent fires dragleave
             if (!dragenterData(this)) {
-                removeClassName(this, 'over');
+                removeClassName(this, OVER_CLASS);
                 dragenterData(this, false);
             }
         });
@@ -209,9 +213,9 @@ nativesortable = (function() {
             currentlyDraggingTarget = null;
             [].forEach.call(element.childNodes, function(el) {
                 if (el.nodeType === 1) {
-                    removeClassName(el, 'over');
-                    removeClassName(el, 'moving');
-                    removeClassName(el, 'sortable-child');
+                    removeClassName(el, OVER_CLASS);
+                    removeClassName(el, DRAGGING_CLASS);
+                    removeClassName(el, CHILD_CLASS);
                     dragenterData(el, false);
                 }
             });
@@ -228,7 +232,7 @@ nativesortable = (function() {
             }
             
             [].forEach.call(element.childNodes, function(el) {
-                removeClassName(el, 'over');
+                removeClassName(el, OVER_CLASS);
             });
             
             currentlyDraggingTarget = this;
@@ -237,7 +241,7 @@ nativesortable = (function() {
                 moveElementNextTo(currentlyDraggingElement, this);
             }
             else {
-                addClassName(this, 'over');
+                addClassName(this, OVER_CLASS);
             }
             
             return prevent(e);
@@ -253,10 +257,11 @@ nativesortable = (function() {
                     target = document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - document.body.scrollTop);
                 }
                 
-                if (hasClassName(target, "sortable-child")) {
+                if (hasClassName(target, CHILD_CLASS)) {
                     fn.apply(target, [e]);
                 }
                 else if (target !== element) {
+                
                     // If a child is initiating the event or ending it, then use the container as context for the callback.
                     var context = moveUpToChildNode(element, target);
                     if (context) {
