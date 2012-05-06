@@ -1,4 +1,3 @@
-
 // nativesortable
 // Author: Brian Grinstead MIT License
 // Originally based on code found here:
@@ -126,6 +125,8 @@ nativesortable = (function() {
                 e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
             }
             
+            // save the current drag item to a global var which can be checked by all native sortable lists on the page
+            dragitem = this;
             currentlyDraggingElement = this;
             addClassName(currentlyDraggingElement, DRAGGING_CLASS);
             
@@ -151,6 +152,16 @@ nativesortable = (function() {
         });
         
         var handleDragEnter = delegate(function(e) {
+            
+            // check if the drop target is the same list as the draggable item
+        	if (dragitem) {
+    			if (element != dragitem.parentNode) {
+    				// clone the item into the list
+    				currentlyDraggingElement = dragitem.cloneNode(true);
+    				element.appendChild(currentlyDraggingElement);
+    				dragitem = null;
+    			}
+    		}
         
             if (!currentlyDraggingElement || currentlyDraggingElement === this) {
                 return true;
