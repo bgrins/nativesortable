@@ -1,25 +1,29 @@
-
-// nativesortable
-// Author: Brian Grinstead MIT License
-// Originally based on code found here:
-// http://www.html5rocks.com/en/tutorials/dnd/basics/#toc-examples
-
-// Usage:
-// var list = document.getElementByID("list");
-// nativesortable(list, { change: onchange });
+/**
+ * nativesortable
+ *
+ * Originally based on code found here:
+ * http://www.html5rocks.com/en/tutorials/dnd/basics/#toc-examples
+ *
+ * @example
+ * var list = document.getElementByID("list");
+ * nativesortable(list, { change: onchange });
+ *
+ * @author Brian Grinstead
+ * @license MIT License
+ */
 
 nativesortable = (function() {
-    
+
     var supportsTouch = ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch);
     var supportsDragAndDrop = !supportsTouch && (function() {
         var div = document.createElement('div');
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
     })();
-    
+
     var CHILD_CLASS = "sortable-child";
     var DRAGGING_CLASS = "sortable-dragging";
     var OVER_CLASS = "sortable-over";
-    
+
     function hasClassName(el, name) {
         return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
     }
@@ -29,14 +33,14 @@ nativesortable = (function() {
           el.className = el.className ? [el.className, name].join(' ') : name;
         }
     }
-    
+
     function removeClassName(el, name) {
         if (hasClassName(el, name)) {
           var c = el.className;
           el.className = c.replace(new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)", "g"), " ").replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         }
     }
-    
+
     function moveElementNextTo(element, elementToMoveNextTo) {
         if (isBelow(element, elementToMoveNextTo)) {
             // Insert element before to elementToMoveNextTo.
@@ -47,13 +51,13 @@ nativesortable = (function() {
             elementToMoveNextTo.parentNode.insertBefore(element, elementToMoveNextTo.nextSibling);
         }
     }
-    
+
     function isBelow(el1, el2) {
         var parent = el1.parentNode;
         if (el2.parentNode != parent) {
             return false;
         }
-        
+
         var cur = el1.previousSibling;
         while (cur && cur.nodeType !== 9) {
             if (cur === el2) {
@@ -63,16 +67,16 @@ nativesortable = (function() {
         }
         return false;
     }
-    
+
     function moveUpToChildNode(parent, child) {
         var cur = child;
         if (cur == parent) { return null; }
-        
+
         while (cur) {
             if (cur.parentNode === parent) {
                 return cur;
             }
-            
+
             cur = cur.parentNode;
             if ( !cur || !cur.ownerDocument || cur.nodeType === 11 ) {
                 break;
@@ -80,7 +84,7 @@ nativesortable = (function() {
         }
         return null;
     }
-    
+
     function prevent(e) {
         if (e.stopPropagation) {
             e.stopPropagation();
@@ -90,10 +94,10 @@ nativesortable = (function() {
         }
         e.returnValue = false;
     }
-    
+
     function dragenterData(element, val) {
         if (arguments.length == 1) {
-            return parseInt(element.getAttribute("data-child-dragenter")) || 0;
+            return parseInt(element.getAttribute("data-child-dragenter"), 10) || 0;
         }
         else if (!val) {
             element.removeAttribute("data-child-dragenter");
@@ -102,89 +106,89 @@ nativesortable = (function() {
             element.setAttribute("data-child-dragenter", Math.max(0, val));
         }
     }
-    
+
     return function(element, opts) {
         if (!opts) {
-            opts = { }; 
+            opts = { };
         }
-        
+
         var warp = !!opts.warp;
         var stop = opts.stop || function() { };
         var start = opts.start || function() { };
         var change = opts.change || function() { };
-        
+
         var currentlyDraggingElement = null;
         var currentlyDraggingTarget = null;
-        
+
         var handleDragStart = delegate(function(e) {
             if (supportsTouch) {
                 prevent(e);
             }
-            
+
             if (e.dataTransfer) {
                 e.dataTransfer.effectAllowed = 'moving';
                 e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
             }
-            
+
             currentlyDraggingElement = this;
             addClassName(currentlyDraggingElement, DRAGGING_CLASS);
-            
+
             [].forEach.call(element.childNodes, function(el) {
                 if (el.nodeType === 1) {
                     addClassName(el, CHILD_CLASS);
                 }
             });
-            
-            
+
+
             addFakeDragHandlers();
         });
-        
+
         var handleDragOver = delegate(function(e) {
             if (!currentlyDraggingElement) {
                 return true;
             }
-            
+
             if (e.preventDefault) {
                 e.preventDefault();
             }
             return false;
         });
-        
+
         var handleDragEnter = delegate(function(e) {
-        
+
             if (!currentlyDraggingElement || currentlyDraggingElement === this) {
                 return true;
             }
-            
+
             // Prevent dragenter on a child from allowing a dragleave on the container
             var previousCounter = dragenterData(this);
             dragenterData(this, previousCounter + 1);
-            
-            if (previousCounter == 0) {
-                
+
+            if (previousCounter === 0) {
+
                 addClassName(this, OVER_CLASS);
-                
+
                 if (!warp) {
                     moveElementNextTo(currentlyDraggingElement, this);
                 }
             }
-            
+
             return false;
         });
-        
+
         var handleDragLeave = delegate(function(e) {
-            
+
             // Prevent dragenter on a child from allowing a dragleave on the container
             var previousCounter = dragenterData(this);
             dragenterData(this, previousCounter - 1);
-                            
+
             // This is a fix for child elements firing dragenter before the parent fires dragleave
             if (!dragenterData(this)) {
                 removeClassName(this, OVER_CLASS);
                 dragenterData(this, false);
             }
         });
-        
+
         var handleDrop = delegate(function(e) {
             if (e.type === 'drop') {
                 if (e.stopPropagation) {
@@ -197,16 +201,16 @@ nativesortable = (function() {
             if (this === currentlyDraggingElement) {
                 return;
             }
-            
-            if (warp) { 
+
+            if (warp) {
                 var thisSibling = currentlyDraggingElement.nextSibling;
                 this.parentNode.insertBefore(currentlyDraggingElement, this);
                 this.parentNode.insertBefore(this, thisSibling);
             }
-            
+
             change(this, currentlyDraggingElement);
         });
-        
+
         var handleDragEnd = function(e) {
 
             currentlyDraggingElement = null;
@@ -219,58 +223,58 @@ nativesortable = (function() {
                     dragenterData(el, false);
                 }
             });
-            
+
             removeFakeDragHandlers();
         };
-        
+
         var handleTouchMove = delegate(function(e) {
-        
-            if (!currentlyDraggingElement || 
+
+            if (!currentlyDraggingElement ||
                 currentlyDraggingElement === this ||
                 currentlyDraggingTarget === this) {
                 return true;
             }
-            
+
             [].forEach.call(element.childNodes, function(el) {
                 removeClassName(el, OVER_CLASS);
             });
-            
+
             currentlyDraggingTarget = this;
-            
+
             if (!warp) {
                 moveElementNextTo(currentlyDraggingElement, this);
             }
             else {
                 addClassName(this, OVER_CLASS);
             }
-            
+
             return prevent(e);
         });
-        
+
         function delegate(fn) {
             return function(e) {
                 var touch = (supportsTouch && e.touches && e.touches[0]) || { };
                 var target = touch.target || e.target;
-                
+
                 // Fix event.target for a touch event
                 if (supportsTouch && document.elementFromPoint) {
                     target = document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - document.body.scrollTop);
                 }
-                
+
                 if (hasClassName(target, CHILD_CLASS)) {
                     fn.apply(target, [e]);
                 }
                 else if (target !== element) {
-                
+
                     // If a child is initiating the event or ending it, then use the container as context for the callback.
                     var context = moveUpToChildNode(element, target);
                     if (context) {
                         fn.apply(context, [e]);
                     }
                 }
-            }
+            };
         }
-        
+
         // Opera and mobile devices do not support drag and drop.  http://caniuse.com/dragndrop
         // Bind/unbind standard mouse/touch events as a polyfill.
         function addFakeDragHandlers() {
@@ -282,13 +286,13 @@ nativesortable = (function() {
                     element.addEventListener('mouseover', handleDragEnter, false);
                     element.addEventListener('mouseout', handleDragLeave, false);
                 }
-                
+
                 element.addEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDrop, false);
                 document.addEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDragEnd, false);
                 document.addEventListener("selectstart", prevent, false);
-            
+
             }
-        
+
         }
 
         function removeFakeDragHandlers() {
@@ -300,13 +304,13 @@ nativesortable = (function() {
                     element.removeEventListener('mouseover', handleDragEnter, false);
                     element.removeEventListener('mouseout', handleDragLeave, false);
                 }
-                
+
                 element.removeEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDrop, false);
                 document.removeEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDragEnd, false);
                 document.removeEventListener("selectstart", prevent, false);
             }
         }
-        
+
         if (supportsDragAndDrop) {
             element.addEventListener('dragstart', handleDragStart, false);
             element.addEventListener('dragenter', handleDragEnter, false);
@@ -323,13 +327,13 @@ nativesortable = (function() {
                 element.addEventListener('mousedown', handleDragStart, false);
             }
         }
-        
-        
+
+
         [].forEach.call(element.childNodes, function(el) {
             if (el.nodeType === 1) {
                 el.setAttribute("draggable", "true");
             }
         });
-        
-    }
-})();
+
+    };
+}());
