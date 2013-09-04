@@ -1,26 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
-    
+
     <meta charset="utf-8">
     <style>
-	.sortable { 
-	   list-style-type: none; 
-	   margin: 0 auto; 
-	   padding: 0; 
-	   width: 80%; 
+	.sortable {
+	   list-style-type: none;
+	   margin: 0 auto;
+	   padding: 0;
+	   width: 80%;
     }
-	.sortable li.sortable-dragging{ 
+	.sortable li.sortable-dragging{
 	   opacity: .25;
         -webkit-transition: -webkit-transform 0.2s ease-out;
-        -moz-transition: -moz-transform 0.2s ease-out;    
-	   -webkit-transform: scale(0.8); 
+        -moz-transition: -moz-transform 0.2s ease-out;
+	   -webkit-transform: scale(0.8);
 	   -moz-transform: scale(0.8);
 	}
 	.sortable li.sortable-over {
 	   opacity: .25;
 	}
-	.sortable li {    
+	.sortable li {
         float: left;
         border: 2px solid #666;
         margin-right: 5px;
@@ -54,11 +54,11 @@
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
     }
-    
+
     #sortable-warp li {
         background-color: red;
     }
-    
+
     [draggable] {
       -moz-user-select: none;
       -khtml-user-select: none;
@@ -74,18 +74,18 @@
       user-drag: none;
     }
     </style>
-    
+
     <link href='nativesortable.css' type='text/css' />
-    
+
 </head>
 <body>
 
     <h1>nativesortable</h1>
     <p>An implementation of HTML5 Drag and Drop API to provide a sortable list of items with <strong>no external dependancies.</strong></p>
-    
+
     <h2>Demo</h2>
     <p>Sort the list below:</p>
-    
+
     <ul id='sortable' class='sortable'>
         <li><div class='header'>Item <strong>1</strong></div><div class='number'><a href='#'>1</a></div></li>
         <li><div class='header'>Item <strong>2</strong></div><div class='number'><a href='#'>2</a></div></li>
@@ -104,12 +104,12 @@
         <li><div class='header'>Item <strong>15</strong></div><div class='number'><a href='#'>15</a></div></li>
         <li><div class='header'>Item <strong>16</strong></div><div class='number'><a href='#'>16</a></div></li>
     </ul>
-    
+
     <br style='clear:both;' />
     <div id='log'></div>
-    
+
     <p>Warp the list below:</p>
-    
+
     <ul id='sortable-warp' class='sortable'>
         <li><div class='header'>Item <strong>1</strong></div><div class='number'><a href='#'>1</a></div></li>
         <li><div class='header'>Item <strong>2</strong></div><div class='number'><a href='#'>2</a></div></li>
@@ -128,13 +128,13 @@
         <li><div class='header'>Item <strong>15</strong></div><div class='number'><a href='#'>15</a></div></li>
         <li><div class='header'>Item <strong>16</strong></div><div class='number'><a href='#'>16</a></div></li>
     </ul>
-    
+
     <br style='clear:both;' />
-    
+
     <h2>Usage</h2>
-    
+
     <a href='https://github.com/bgrins/nativesortable'>See the project repository for usage information.</a>
-    
+
     <a href="http://github.com/bgrins/nativesortable"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 
     <script src='nativesortable.js' type='text/javascript'></script>
@@ -142,14 +142,14 @@
         var sortable = document.getElementById("sortable");
         nativesortable(sortable, {
             change: function() {
-            
+
             }
         });
-        
+
         var sortableWarp = document.getElementById("sortable-warp");
         nativesortable(sortableWarp, {
             change: function() {
-            
+
             },
             warp: true
         });
