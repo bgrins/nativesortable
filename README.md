@@ -9,10 +9,7 @@ See demo here: http://bgrins.github.com/nativesortable/
     var list = document.getElementByID("list");
     nativesortable(list, { change: onchange });
 
-I would also recommend adding the following CSS to make sure that:
-
-* Text does not get highlighted while dragging
-* That native draggable elements (like `img` and `a` tags)
+I would also recommend adding the following CSS:
 
     [draggable] {
       -moz-user-select: none;
@@ -26,3 +23,8 @@ I would also recommend adding the following CSS to make sure that:
       -webkit-user-drag: none;
       user-drag: none;
     }
+
+This makes sure that
+
+* Text does not get highlighted while dragging
+* That native draggable elements (like `img` and `a` tags)
