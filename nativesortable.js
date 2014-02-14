@@ -24,6 +24,16 @@ nativesortable = (function() {
     var DRAGGING_CLASS = "sortable-dragging";
     var OVER_CLASS = "sortable-over";
 
+    function each(arr, fn) {
+        if([].forEach) {
+            return [].forEach.call(arr, fn);
+        }
+
+        for(var i = 0, l = arr.length; i < l; ++i) {
+            fn(arr[i], i, arr);
+        }
+    }
+
     function hasClassName(el, name) {
         return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
     }
@@ -133,7 +143,7 @@ nativesortable = (function() {
             currentlyDraggingElement = this;
             addClassName(currentlyDraggingElement, DRAGGING_CLASS);
 
-            [].forEach.call(element.childNodes, function(el) {
+            each(element.childNodes, function(el) {
                 if (el.nodeType === 1) {
                     addClassName(el, CHILD_CLASS);
                 }
@@ -215,7 +225,7 @@ nativesortable = (function() {
 
             currentlyDraggingElement = null;
             currentlyDraggingTarget = null;
-            [].forEach.call(element.childNodes, function(el) {
+            each(element.childNodes, function(el) {
                 if (el.nodeType === 1) {
                     removeClassName(el, OVER_CLASS);
                     removeClassName(el, DRAGGING_CLASS);
@@ -235,7 +245,7 @@ nativesortable = (function() {
                 return true;
             }
 
-            [].forEach.call(element.childNodes, function(el) {
+            each(element.childNodes, function(el) {
                 removeClassName(el, OVER_CLASS);
             });
 
@@ -329,7 +339,7 @@ nativesortable = (function() {
         }
 
 
-        [].forEach.call(element.childNodes, function(el) {
+        each(element.childNodes, function(el) {
             if (el.nodeType === 1) {
                 el.setAttribute("draggable", "true");
             }
