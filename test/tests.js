@@ -15,4 +15,5 @@ test( "Basic test", function() {
   for (var i = 0; i < list.children.length; i++) {
     ok (list.children[i].hasAttribute("draggable"), "Child is draggable");
   }
+
 });
