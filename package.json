@@ -17,5 +17,10 @@
   "bugs": {
     "url": "https://github.com/bgrins/nativesortable/issues"
   },
-  "homepage": "http://bgrins.github.io/nativesortable"
+  "homepage": "http://bgrins.github.io/nativesortable",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-qunit": "~0.4.0",
+    "grunt-contrib-jshint": "~0.8.0"
+  }
 }
