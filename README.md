@@ -15,6 +15,8 @@ See demo here: http://bgrins.github.com/nativesortable/
     - or -
     npm install nativesortable
 
+## Extra CSS
+
 I would also recommend adding the following CSS:
 
     [draggable] {
