@@ -9,6 +9,12 @@ See demo here: http://bgrins.github.com/nativesortable/
     var list = document.getElementByID("list");
     nativesortable(list, { change: onchange });
 
+## Package Management
+
+    bower install nativesortable
+    - or -
+    npm install nativesortable
+
 I would also recommend adding the following CSS:
 
     [draggable] {
