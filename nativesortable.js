@@ -1,5 +1,5 @@
 /**
- * nativesortable - v0.0.1
+ * nativesortable
  *
  * Originally based on code found here:
  * http://www.html5rocks.com/en/tutorials/dnd/basics/#toc-examples
@@ -163,7 +163,6 @@
         });
 
         var handleDragEnter = delegate(function(e) {
-
             if (!currentlyDraggingElement || currentlyDraggingElement === this) {
                 return true;
             }
@@ -185,7 +184,6 @@
         });
 
         var handleDragLeave = delegate(function(e) {
-
             // Prevent dragenter on a child from allowing a dragleave on the container
             var previousCounter = dragenterData(this);
             dragenterData(this, previousCounter - 1);
@@ -215,11 +213,10 @@
                 this.parentNode.insertBefore(currentlyDraggingElement, this);
                 this.parentNode.insertBefore(this, thisSibling);
             }
-
-            change(this, currentlyDraggingElement);
         });
 
         var handleDragEnd = function(e) {
+            change(this,currentlyDraggingElement);
 
             currentlyDraggingElement = null;
             currentlyDraggingTarget = null;
@@ -236,7 +233,6 @@
         };
 
         var handleTouchMove = delegate(function(e) {
-
             if (!currentlyDraggingElement ||
                 currentlyDraggingElement === this ||
                 currentlyDraggingTarget === this) {
