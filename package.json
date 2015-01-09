@@ -1,6 +1,6 @@
 {
   "name": "nativesortable",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "use native drag and drop APIs to provide sortable items",
   "main": "nativesortable.js",
   "repository": {
