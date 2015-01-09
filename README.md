@@ -7,7 +7,12 @@ See demo here: http://bgrins.github.com/nativesortable/
 ## Usage
 
     var list = document.getElementByID("list");
-    nativesortable(list, { change: onchange });
+    nativesortable(list, {
+      change: onchange,
+      childClass: "sortable-child",
+      draggingClass: "sortable-dragging",
+      overClass: "sortable-over"
+    });
 
 ## Package Management
 
