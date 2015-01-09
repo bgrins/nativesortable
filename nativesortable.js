@@ -28,10 +28,6 @@
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
     })();
 
-    var CHILD_CLASS = "sortable-child";
-    var DRAGGING_CLASS = "sortable-dragging";
-    var OVER_CLASS = "sortable-over";
-
     function hasClassName(el, name) {
         return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
     }
@@ -124,6 +120,10 @@
         var stop = opts.stop || function() { };
         var start = opts.start || function() { };
         var change = opts.change || function() { };
+
+        var CHILD_CLASS = opts.childClass || "sortable-child";
+        var DRAGGING_CLASS = opts.draggingClass || "sortable-dragging";
+        var OVER_CLASS = opts.overClass || "sortable-over";
 
         var currentlyDraggingElement = null;
         var currentlyDraggingTarget = null;
