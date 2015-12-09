@@ -8,7 +8,9 @@ See demo here: http://bgrins.github.com/nativesortable/
 
     var list = document.getElementById("list");
     nativesortable(list, {
-      change: onchange,
+      change: function(parent, elem) {
+        // ...
+      },
       childClass: "sortable-child",
       draggingClass: "sortable-dragging",
       overClass: "sortable-over"
