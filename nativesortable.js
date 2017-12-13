@@ -5,7 +5,7 @@
  * http://www.html5rocks.com/en/tutorials/dnd/basics/#toc-examples
  *
  * @example
- * var list = document.getElementByID("list");
+ * var list = document.getElementByID('list');
  * nativesortable(list, { change: onchange });
  *
  * @author Brian Grinstead
@@ -29,7 +29,7 @@
     })();
 
     function hasClassName(el, name) {
-        return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
+        return new RegExp('(?:^|\\s+)' + name + '(?:\\s+|$)').test(el.className);
     }
 
     function addClassName (el, name) {
@@ -41,7 +41,7 @@
     function removeClassName(el, name) {
         if (hasClassName(el, name)) {
           var c = el.className;
-          el.className = c.replace(new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)", "g"), " ").replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+          el.className = c.replace(new RegExp('(?:^|\\s+)' + name + '(?:\\s+|$)', 'g'), ' ').replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         }
     }
 
@@ -101,13 +101,13 @@
 
     function dragenterData(element, val) {
         if (arguments.length == 1) {
-            return parseInt(element.getAttribute("data-child-dragenter"), 10) || 0;
+            return parseInt(element.getAttribute('data-child-dragenter'), 10) || 0;
         }
         else if (!val) {
-            element.removeAttribute("data-child-dragenter");
+            element.removeAttribute('data-child-dragenter');
         }
         else {
-            element.setAttribute("data-child-dragenter", Math.max(0, val));
+            element.setAttribute('data-child-dragenter', Math.max(0, val));
         }
     }
 
@@ -121,9 +121,9 @@
         var start = opts.start || function() { };
         var change = opts.change || function() { };
 
-        var CHILD_CLASS = opts.childClass || "sortable-child";
-        var DRAGGING_CLASS = opts.draggingClass || "sortable-dragging";
-        var OVER_CLASS = opts.overClass || "sortable-over";
+        var CHILD_CLASS = opts.childClass || 'sortable-child';
+        var DRAGGING_CLASS = opts.draggingClass || 'sortable-dragging';
+        var OVER_CLASS = opts.overClass || 'sortable-over';
 
         var currentlyDraggingElement = null;
         var currentlyDraggingTarget = null;
@@ -135,7 +135,7 @@
 
             if (e.dataTransfer) {
                 e.dataTransfer.effectAllowed = 'moving';
-                e.dataTransfer.setData('Text', "*"); // Need to set to something or else drag doesn't start
+                e.dataTransfer.setData('Text', '*'); // Need to set to something or else drag doesn't start
             }
 
             currentlyDraggingElement = this;
@@ -284,7 +284,7 @@
         function addFakeDragHandlers() {
             if (!supportsDragAndDrop) {
                 if (supportsTouch) {
-                    element.addEventListener("touchmove", handleTouchMove, false);
+                    element.addEventListener('touchmove', handleTouchMove, false);
                 }
                 else {
                     element.addEventListener('mouseover', handleDragEnter, false);
@@ -293,7 +293,7 @@
 
                 element.addEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDrop, false);
                 document.addEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDragEnd, false);
-                document.addEventListener("selectstart", prevent, false);
+                document.addEventListener('selectstart', prevent, false);
 
             }
 
@@ -302,7 +302,7 @@
         function removeFakeDragHandlers() {
             if (!supportsDragAndDrop) {
                 if (supportsTouch) {
-                    element.removeEventListener("touchmove", handleTouchMove, false);
+                    element.removeEventListener('touchmove', handleTouchMove, false);
                 }
                 else {
                     element.removeEventListener('mouseover', handleDragEnter, false);
@@ -311,7 +311,7 @@
 
                 element.removeEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDrop, false);
                 document.removeEventListener(supportsTouch ? 'touchend' : 'mouseup', handleDragEnd, false);
-                document.removeEventListener("selectstart", prevent, false);
+                document.removeEventListener('selectstart', prevent, false);
             }
         }
 
@@ -335,7 +335,7 @@
 
         [].forEach.call(element.childNodes, function(el) {
             if (el.nodeType === 1) {
-                el.setAttribute("draggable", "true");
+                el.setAttribute('draggable', 'true');
             }
         });
 
