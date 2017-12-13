@@ -6,38 +6,45 @@ See demo here: http://bgrins.github.com/nativesortable/
 
 ## Usage
 
-    var list = document.getElementById("list");
-    nativesortable(list, {
-      change: function(parent, elem) {
-        // ...
-      },
-      childClass: "sortable-child",
-      draggingClass: "sortable-dragging",
-      overClass: "sortable-over"
-    });
+```js
+var list = document.getElementById("list");
+nativesortable(list, {
+  change: function(parent, elem) {
+    // ...
+  },
+  childClass: "sortable-child",
+  draggingClass: "sortable-dragging",
+  overClass: "sortable-over"
+});
+```
 
 ## Package Management
 
-    bower install nativesortable
-    - or -
-    npm install nativesortable
+```
+bower install nativesortable
+- or -
+npm install nativesortable
+```
 
 ## Extra CSS
 
 I would also recommend adding the following CSS:
 
-    [draggable] {
-      -moz-user-select: none;
-      -khtml-user-select: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    [draggable] * {
-      -moz-user-drag: none;
-      -khtml-user-drag: none;
-      -webkit-user-drag: none;
-      user-drag: none;
-    }
+```css
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+[draggable] * {
+  -moz-user-drag: none;
+  -khtml-user-drag: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+```
 
 This makes sure that
 
